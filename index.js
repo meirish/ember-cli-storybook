@@ -12,7 +12,7 @@ module.exports = {
 
   _getOptions() {
     let addonOptions = (this.parent && this.parent.options) || (this.app && this.app.options) || {};
-    return addonOptions[this.name] || {};
+    return addonOptions['storybook'] || addonOptions[this.name] || {};
   },
 
   included(app) {
@@ -35,9 +35,12 @@ module.exports = {
       return appTree;
     }
 
-    let componentJS = new Funnel('.', {
-      include: componentFilePathPatterns,
-    });
+    // if a funnel is provided, use that, otherwise create a new funnel and include the componnetFilePathPatterns
+    let componentJS = options.componentDocsFunnel ?
+      options.componentDocsFunnel :
+      new Funnel('.', {
+        include: componentFilePathPatterns,
+      });
     let componentDocsTree = new YUIDocsGenerator([componentJS], {
       project: this.project,
       destDir: 'storybook-docgen',
